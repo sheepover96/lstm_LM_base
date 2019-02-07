@@ -2,8 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-BATCH_SIZE = 64
-
 class LSTMLM(nn.Module):
 
     def __init__(self, vocab_size, embedding_dim, num_layers, hidden_dim, gpu):
