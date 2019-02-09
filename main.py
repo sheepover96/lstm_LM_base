@@ -15,8 +15,8 @@ EMBEDDING_DIM = 100
 NUM_LAYERS = 2
 HIDDEN_DIM = 50
 BATCH_SIZE = 128
-EPOCH_NUM = 100
-lr = 0.001
+EPOCH_NUM = 100000
+lr = 0.1
 
 def to_onehot(target, n_dims=None):
    bptt_size, batch_size = target.shape[0], target.shape[1]
@@ -50,8 +50,6 @@ def train(epoch, model, device, train_loader, optimizer, vocab_size):
          for i, p in enumerate( model.parameters() ):
             if p.grad is not None:
                p.data.add_(-lr*p.grad.data)
-            else:
-               print(i)
 
          total_loss += loss.item()
       print(total_loss/float(batch_idx))

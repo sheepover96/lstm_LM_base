@@ -9,5 +9,6 @@ WORKDIR /usr/src/app
 
 COPY dataset dataset.py lstm_lm.py main.py requirements.txt ./
 RUN pip3 install --no-cache-dir -r requirements.txt
+RUN python3 -m spacy download en
 
-CMD python3 train.py
+CMD python3 main.py
