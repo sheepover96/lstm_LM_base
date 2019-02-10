@@ -5,10 +5,14 @@ import torch.optim as optim
 
 from torchtext.data import Field, Dataset, BucketIterator, BPTTIterator
 from torchtext.datasets import LanguageModelingDataset
+import nltk
+from nltk.corpus import stopwords
 import spacy
 spacy_en = spacy.load('en')
 
 from lstm_lm import LSTMLM
+
+MODEL_SAVE_PATH = './model/pr_lm_model.pt'
 
 GPU = torch.cuda.is_available()
 EMBEDDING_DIM = 100
@@ -33,7 +37,6 @@ def repackage_hidden(h):
 
 def train(epoch, model, device, train_loader, optimizer, vocab_size):
    model.train()
-   print(model)
    hidden = model.init_hidden(BATCH_SIZE)
    criterion = nn.CrossEntropyLoss()
    for ep in range(epoch):
@@ -64,8 +67,10 @@ def tokenizer2(text):
     return [tok.text for tok in spacy_en.tokenizer(text)]
 
 def main():
+   nltk.download('stopwords')
+   en_stopwords = stopwords.words('english')
 
-   TEXT = Field(sequential=True, tokenize=tokenizer2, lower=True)
+   TEXT = Field(sequential=True, tokenize=tokenizer2, lower=True, stop_words=en_stopwords)
    lang = LanguageModelingDataset(path='./dataset/prideand.txt', text_field=TEXT)
    TEXT.build_vocab(lang, min_freq=3)
    vocab = TEXT.vocab
@@ -81,6 +86,7 @@ def main():
 
    train_loader = BPTTIterator(dataset=lang, batch_size=BATCH_SIZE, bptt_len=30)
    train(EPOCH_NUM, model, device, train_loader, optimizer, vocab_size)
+   torch.save(model.state_dict(), MODEL_SAVE_PATH)
 
 
 if __name__ == '__main__':
